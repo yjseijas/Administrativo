@@ -1,0 +1,54 @@
+﻿@model CrudsApi.Models.Cuentas
+
+@{
+    Layout = null;
+}
+
+@using (Html.BeginForm("AddOrEdit", "Cuentas", FormMethod.Post, new { onsubmit = "return SubmitForm(this)" }))
+
+{
+<div class="form-group">
+    @Html.LabelFor(model => model.idCuenta, new { @class = "control-label" })
+    @if (Model.idCuenta == 0)
+    {
+        @Html.EditorFor(model => model.idCuenta, new { HtmlAttributes = new { @Class = "form-control" } })
+    }
+    else
+    {
+        <br />
+        @Html.DisplayTextFor(model => model.idCuenta)
+        @Html.HiddenFor(model => model.idCuenta)
+    }
+    @Html.ValidationMessageFor(model => model.idCuenta)
+</div>
+
+    <div class="form-group">
+            @Html.LabelFor(model => model.descripcion, new { @Class = "control-label" })
+            @Html.EditorFor(model => model.descripcion, new { htmlAttributes = new { @Class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.descripcion)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.recibeasientos, new { @Class = "control-label" })
+        @Html.EditorFor(model => model.recibeasientos, new { htmlAttributes = new { @Class = "form-control" } })
+        @Html.ValidationMessageFor(model => model.recibeasientos)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.ajustable, new { @Class = "control-label" })
+        @Html.EditorFor(model => model.ajustable, new { htmlAttributes = new { @Class = " form-control" } })
+        @Html.ValidationMessageFor(model => model.ajustable)
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.idTipoCuenta, "idTipoCuenta", htmlAttributes: new { @class = "control-label" })
+        @Html.DropDownList("idTipoCuenta", null, htmlAttributes: new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.idTipoCuenta, "", new { @class = "text-danger" })
+    </div>
+    <br/>
+    <div class="form-group">
+        <input type="submit" value="Aceptar" class="btn btn-primary" />
+        <input type="reset" value="Resetear" class="btn btn-warning" />
+    </div>
+
+}
+

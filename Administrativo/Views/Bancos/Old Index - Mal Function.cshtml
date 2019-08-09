@@ -1,0 +1,120 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+<link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+<link href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js" rel="stylesheet" />
+
+<h2>Index</h2>
+<a class="popup btn btn-primary" href="/Bancos/GetBanco/0" style="margin-bottom:20px; margin-top:20px;">Agregar Nuevo</a>
+<div style="width:90%; margin: 0 auto" class="tablecontainer">
+    <table id="dataBancos">
+        <thead>
+            <tr>
+                <th>Nombre Banco</th>
+                <th>Nro. Cuit</th>
+                <th>Editar</th>
+                <th>Eliminar</th>
+            </tr>
+        </thead>
+
+    </table>
+
+</div>
+
+
+@section scripts{
+    <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+    <script src="~/Scripts/jquery-3.3.1.min.js"></script>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var oTable = $('#dataBancos').DataTable(
+                {
+                    "ajax":
+                    {
+                        "url": "/Bancos/GetBancos",
+                        "type": "GET",
+                        "datatype": "json",
+                        "dataSrc": ""
+                    },
+                    "columns":
+                        [
+                            { "data": "descripcion" },
+                            { "data": "numerocuit" },
+                            {
+                                "data": "idBanco", "render": function (data) {
+                                    return '<a class = "popup" href="/bancos/create/' + data + '">Editar</a>';
+                                }
+                            },
+                            {
+                                "data": "idBanco", "render": function (data) {
+                                    return '<a class = "popup" href="/bancos/delete/' + data + '">Editar</a>';
+                                }
+                            }
+
+                        ]
+
+                });
+
+            $('.tablecontainer').on('click', 'a.popup', function (e) {
+                e.preventDefault();
+                OpenPopup($(this).attr('href'));
+            });
+
+            function OpenPopup(pageUrl) {
+                var $pageContent = $('<div/>');
+                $pageContent.load(pageUrl, function () {
+                    $('.tablecontainer').on('click', 'a.popup', function (e) {
+                        e.preventDefault();
+                        OpenPopup($(this).attr('href'));
+                    });
+                });
+
+                $dialog = $('<div class = "popupWindow" style = "overflow:auto"></div>')
+                    .html($pageContent)
+                    .dialog({
+                        draggable: false,
+                        autoOpen: false,
+                        resizable: false,
+                        model: true,
+                        title: 'Popup Dialog',
+                        height: 550,
+                        width: 600,
+                        close: function () {
+                            $dialog.dialog('destroy').remove();
+                        }
+                    });
+
+                $('.popupWindow').on('submit', '#popupform', function (e) {
+                    var url = $('#popupform')[0].action;
+                    $.ajax({
+                        type: 'POST',
+                        url: url,
+                        data: $('#popupform').serialize(),
+                        success: function (data) {
+                            if (data.status) {
+                                $dialog.dialog('close');
+                                oTable.ajax.reload();
+
+                            }
+
+                        }
+                    });
+                });
+
+                $dialog.dialog('open');
+            }
+
+
+        });
+    </script>
+}
+
+
